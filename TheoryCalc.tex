@@ -1,0 +1,312 @@
+\subsection{Theoretical Calculations}
+\label{DesaTeorico}
+
+\subsubsection{Solar Panel}
+
+Let's assume the following solar panel model, \textbf{RNG-100D}, for the theoretical calculations, and we will use a basic model following Figure \ref{ModelPanel}. The irradiance reaching the photodiode will be replaced by a DC current source, which we will then simulate.
+
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[american]\draw
+        to[I, l=$I_{ph}$,name=fuente] ++(0,2) --++(2,0)coordinate(A) to[D,l=$D_{1}$, fill=black] ++(0,-2) coordinate(B) -| (fuente.west)
+        (A)--++(2,0) coordinate(A1) to[D,l=$D_{2}$, fill=black] ++(0,-2) coordinate(B1) -| (B)
+        (A1) --++(2,0) coordinate(A2) to[R,l=$R_{p}$] ++(0,-2) coordinate(B2) -| (B1)
+        (A2) to[R,l=$R_{s}$] ++(2,0) to[short,-o] ++(0,0) node[label, color=blue, below]{$+$}
+        (B2) --++(2,0) to[short,-o] ++(0,0) node[label, color=red, above]{$-$}
+    ;\end{circuitikz}
+    \caption{Basic model of a solar panel (Double Diode)}
+    \label{ModelPanel}
+\end{figure}
+
+Where:
+
+\begin{itemize}
+  \item $I_{ph}$: Generated current.
+  \item $R_{p}$: Parallel resistance (models leakage losses).
+  \item $R_{s}$: Series resistance (models internal losses).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[c]{0.30\textwidth}
+        \begin{equation*}
+            I_{ph} = G\cdot A \cdot \eta
+        \end{equation*}
+        Where:
+        \begin{itemize}
+          \item $G$: Solar irradiance [\watt/\si{\meter\squared}].
+          \item $A$: Panel area [\si{\meter\squared}].
+          \item $\eta$: Panel efficiency.
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}[c]{0.30\textwidth}
+        \begin{equation}\label{ParalelResistor}
+            R_{p} = \frac{V_{oc}}{I_{sc}-I_{ph}}
+        \end{equation}
+        Where:
+        \begin{itemize}
+          \item $V_{oc}$: Open-circuit voltage.
+          \item $I_{sc}$: Short-circuit current.
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}[c]{0.30\textwidth}
+        \begin{equation}\label{SerieResistor}
+            R_{s} = \frac{V_{oc}-V_{mp}}{I_{mp}}
+        \end{equation}
+        Where:
+        \begin{itemize}
+          \item $V_{mp}$: Voltage at maximum power point.
+          \item $I_{mp}$: Current at maximum power point.
+        \end{itemize}
+    \end{minipage}
+\end{figure}
+
+For practical purposes, we will assume $I_{ph} < I_{sc}$, because the parallel resistance cannot be negative. Besides, the $I_{ph}$ calculated with solar irradiance values in Caracas results in a current in the order of tens. Therefore, with the following values from Table \ref{DataPanelI}, obtained from the manufacturer's datasheet:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    $V_{oc}$ & $I_{sc}$ & $V_{mp}$ & $I_{mp}$ \\
+    \hline
+    $22.5\volt$ & $5.75\ampere$ & $18.9\volt$ & $5.29\ampere$ \\
+    \hline
+  \end{tabular}
+  \caption{Values for calculating the resistances}\label{DataPanelI}
+\end{table}
+
+Assuming the value of $I_{ph} = 5\ampere$ and using equations \ref{ParalelResistor} and \ref{SerieResistor}, we obtain the following values:
+
+\begin{center}
+    $\begin{cases}
+      R_{p} = 30\ohm \\
+      R_{s} = 0.6805\ohm
+    \end{cases}$
+\end{center}
+
+\subsubsection{Buck Converter}
+
+We will reduce the output voltage of the panel to power the battery, as well as to avoid losing much energy in the sensor components and the microcontroller. We have the following model of the DC-DC converter (Figure \ref{BuckModel}):
+
+\begin{figure}[H]
+  \centering
+    \begin{circuitikz}[american]\draw
+        (0,0)node[label, color=blue, below]{$+$} to[short,o-] ++(1,0) to[nos] ++(1,0) coordinate(A) to[D, invert, fill=black,label=$D_{3}$] ++(0,-2) coordinate(B) to[short,-o] ++(-2,0) node[label, color=red, above]{$-$}
+        (A) to[L,label=$L$] ++(2,0) coordinate(A1) to[C,label=$C$] ++(0,-2) coordinate(B1) -| (B)
+        (A1) --++(2,0) coordinate (A2) to[R,label=$R_{Load}$] ++(0,-2) -| (B1)
+        (A2) to[short,-o]++(1,0) node[label, color=black, above]{OUT}
+    ;\end{circuitikz}
+    \caption{Buck Converter}
+    \label{BuckModel}
+\end{figure}
+
+The voltage range supported by the battery for charging is ($3\volt-4.2\volt$), and we will use a shunt resistor for the current sensor (which will be studied in the next subsection) with a value of $0.05\ohm$ and $I_{charge}=1\ampere$. Therefore, the output voltage of the regulator will be:
+
+\begin{align}\label{Buck1}
+  V_{out} =& V_{battery} + V_{shunt}\notag\\
+  V_{out} =& 4.2\volt+0.05\volt\notag\\
+  V_{out} =& 4.25\volt
+\end{align}
+
+\subsubsection*{Converter Ratio}
+
+\begin{align}\label{Buck2}
+  V_{out}=& D \cdot V_{panel}\notag \\
+  D =& \frac{4.25\volt}{12\volt} \notag \\
+  D =& 0.3542
+\end{align}
+
+\subsubsection*{Inductor}
+
+To calculate the value of the inductor. It is known that the current $I_{L} = I_{out}$, and the following condition must be met to prevent the current in the inductor from reaching zero:
+
+\begin{align}\label{InductorBuck}
+   L &> \frac{(V_{panel}-V_{out})\cdot D}{2\cdot I_{out} \cdot f_{SW}} \notag\\
+   L &> \frac{(12\volt-4.25\volt)\cdot 0.3542}{2\cdot (0.52\ampere) \cdot (50\si{\kHz})} \notag \\
+   L &> 52.79\si{\micro\henry}
+\end{align}
+
+The value of $0.52\ampere$ was obtained from the datasheet of the cell that makes up the battery. A frequency of $50\si{\kHz}$ was set to obtain a switching period of $20\si{\micro\second}$. I will now proceed to calculate the current ripple in the inductor:
+
+\begin{align}\label{RizadoInductor}
+  \Delta I_{L} =& \frac{(V_{panel}-V_{out})\cdot D}{L\cdot f_{SW}}\notag \\
+  \Delta I_{L} =& \frac{(12\volt-4.25\volt)\cdot 0.3542}{(52.79\si{\micro\henry})\cdot (50\si{\kHz})}\notag \\
+  \Delta I_{L} = & 1.039\ampere
+\end{align} 
+
+\subsubsection*{Ripple Voltage and Capacitor}
+
+The ripple voltage is obtained as follows:
+
+\begin{equation*}
+  \Delta V_{out} < 1\% \cdot V_{out} \hspace{0.5cm} \rightsquigarrow \Delta V_{out} < 42.5\si{\milli\volt}
+\end{equation*} 
+Therefore, the capacitor value will be:
+
+\begin{align}\label{CondensadorBuck}
+    C =& \frac{\Delta I_{L}}{8\cdot \Delta V_{out} \cdot f_{SW}}\notag\\
+    C =& \frac{1.039\ampere}{8\cdot (42.5\si{\milli\volt}) \cdot (50\si{\kHz})}\notag\\
+    C =& 61.12\si{\micro\farad}
+\end{align}
+
+\subsubsection{Current Sensor}
+
+The shunt resistor ($R_{sh}$) is placed in series with the load (the battery in my case). The current $I$ flowing to the load generates a voltage drop across the shunt, given by Ohm's Law:
+
+\begin{equation*}
+    V = I \cdot R
+\end{equation*} 
+
+\textbf{For example:} If $R_{sh} = 0.05 \ohm$ and a current of $I=5\ampere$ flows, then:
+
+\begin{equation*}
+    V_{sh} = 0.05 \ohm \cdot 5\ampere = 0.25\volt
+\end{equation*}
+
+Then the shunt resistance ratio will be $50\si{\milli\volt}/\ampere$. We will have that the shunt voltage will be:
+
+\begin{equation}\label{TensionShunt}
+    V_{sh} = V_{buck} - V_{bat}
+\end{equation}
+
+And for the current it will be:
+
+\begin{equation}\label{CorrienteSunt}
+    I_{sh} = \frac{V_{buck} - V_{bat}}{R_{sh}} = \frac{V_{buck} - V_{bat}}{0.05}
+\end{equation}
+
+\subsubsection{Battery}
+
+\subsubsection*{Technical Parameters}
+\begin{itemize}
+    \item Nominal voltage: $3.7\volt$
+    \item Typical capacity: $2500\si{\milli\ampere\hour}$
+    \item Internal resistance: $100\si{\milli\ohm}$
+    \item Maximum voltage (charged): $4.2\volt$
+    \item Minimum voltage (discharged): $3.0\volt$
+\end{itemize}
+
+\subsubsection*{Electrical Model in NGSPICE}
+A modified Thevenin model is implemented:
+
+\begin{equation}\label{TheveninBateria}
+    V_{\text{bat}} = V_{\text{OCV}} - I_{\text{bat}} \cdot R_{\text{int}}
+\end{equation}
+
+\begin{itemize}
+    \item $V_{\text{OCV}}$: Open-circuit voltage (dependent on SOC)
+    \item $R_{\text{int}}$: Internal resistance ($100\si{\milli\ohm}$)
+    \item A $3000\si{\farad}$ capacitor to simulate the SOC:
+    \begin{equation}
+        \text{SOC} = \frac{V_{\text{bat}}}{4.2} \times 100\% 
+    \end{equation}
+\end{itemize}
+
+\subsubsection*{Physical Layout and Connections}
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}[scale=0.8, transform shape]
+    % Batería
+    \draw (0,0) to[battery1, l=$3.7\ \text{V}$] (0,3)
+          to[R, l=$100\ \text{m}\Omega$] (3,3)
+          to[C, l=$3000\ \text{F}$, v=$V_{\text{SOC}}$] (3,0)
+          -- (0,0);
+          
+    % Carga
+    \draw (3,3) -- (5,3)
+          to[R, l=$R_{\text{load}}$] (5,0)
+          -- (3,0);
+          
+    % Etiquetas
+    \draw (2.5,4) node[right] {18650 Battery};
+    \draw[<-, thick] (2.5,3.2) -- (5.0,3.2) node[midway,above] {$-I_{bat}$};
+    
+    \end{circuitikz}
+    \caption{Circuit model of the 18650 battery}
+\end{figure}
+
+\subsubsection*{Typical Configurations}
+\begin{itemize}
+    \item \textbf{Series (2S)}: 
+    \begin{equation}
+        V_{\text{total}} = 3.7 \times 2 = 7.4\volt
+    \end{equation}
+    
+    \item \textbf{Parallel (2P)}: 
+    \begin{equation}
+        C_{\text{total}} = 2500 \times 2 = 5000\si{\milli\ampere\hour}
+    \end{equation}
+    
+    \item \textbf{2S2P}: Combination of both configurations:
+    \begin{align*}
+        V_{\text{total}} &= 7.4\volt \\
+        C_{\text{total}} &= 5000\si{\milli\ampere\hour}
+    \end{align*}
+\end{itemize}
+
+\subsubsection{ESP32 and Load}
+
+\subsubsection*{Digital Comparator (ESP32 Logic)}
+\begin{itemize}
+\item \textbf{Voltage reference}:
+  \begin{equation}
+  V_{\text{ref}} = I_{\text{max}} \times R_{\text{shunt}} = 5\,\text{A} \times 0.05\,\ohm = 0.25\volt
+  \end{equation}
+
+\item \textbf{Behavioral source}:
+\begin{verbatim}
+    Bcontrol control_signal 0 V=V(OUT,BAT) > V(control_ref) ? 0 : 5
+\end{verbatim}
+
+\begin{equation}
+V_{\text{out}} = 
+\begin{cases}
+0\,\text{V} & \text{if } V_{\text{shunt}} > 0.25\,\text{V} \\
+5\,\text{V} & \text{otherwise}
+\end{cases}
+\end{equation}
+\end{itemize}
+
+\subsubsection*{Controlled Switch (MOSFET)}
+\begin{verbatim}
+    .model SW_MODD SW(ROFF=1E+12 RON=1 VT=2.5 VH=0.5)
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\hline
+Parameter & Value & Description \\
+\hline
+RON & $1\ohm$ & ON-state resistance \\
+ROFF & $1\si{\tera\ohm}$ & OFF-state resistance \\
+VT & $2.5\volt$ & Threshold voltage \\
+VH & $0.5\volt$ & Hysteresis \\
+\hline
+\end{tabular}
+\caption{MOSFET model parameters}
+\end{table}
+
+\subsubsection*{Operating Flow}
+\begin{itemize}
+\item \textbf{Normal mode ($I < 5\ampere$)}:
+  \begin{itemize}
+  \item Control signal = $5\volt$
+  \item MOSFET closed ($R_{\text{ON}} = 1\ohm$)
+  \item Loads connected
+  \end{itemize}
+
+\item \textbf{Overcurrent ($I > 5\ampere$)}:
+  \begin{itemize}
+  \item Control signal = $0\volt$
+  \item MOSFET open ($R_{\text{OFF}} = 1\,\si{\tera\ohm}$)
+  \item Loads disconnected
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{Model Advantages}
+\begin{itemize}
+\item \textbf{Load isolation}: the battery continues to charge during outages.
+\item \textbf{Realistic simulation}: MOSFET parameters equivalent to real components.
+\item \textbf{Computational efficiency}: use of native NGSPICE elements.
+\end{itemize}

@@ -1,0 +1,12 @@
+\documentclass{standalone}
+\usepackage{circuitikz}
+
+\begin{document}
+    \begin{circuitikz}[american]\draw
+        to[I, l=$I_{ph}$,name=fuente] ++(0,2) --++(2,0)coordinate(A) to[D,l=$D_{1}$] ++(0,-2) coordinate(B) -| (fuente.west)
+        (A)--++(2,0) coordinate(A1) to[D,l=$D_{2}$] ++(0,-2) coordinate(B1) -| (B)
+        (A1) --++(2,0) coordinate(A2) to[R,l=$R_{p}$] ++(0,-2) coordinate(B2) -| (B1)
+        (A2) to[R,l=$R_{s}$] ++(2,0) to[short,-o] ++(0,0) node[label, color=blue, below]{$+$}
+        (B2) --++(2,0) to[short,-o] ++(0,0) node[label, color=red, above]{$-$}
+    ;\end{circuitikz}
+\end{document}

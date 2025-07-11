@@ -1,0 +1,33 @@
+\section{Development}
+
+The goal is to design a system that covers the entire process from energy acquisition to its final use, including a storage system (battery). A simple design for the whole system will be outlined, covering simulation, schematic design, PCB design (using the KiCad tool), among other software. The initial plan for this project is shown in the following block diagram in Figure \ref{Diagrama 1}:
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm]
+        \node (Solarcell) [startstop] {Solar Panel};
+        \node (Regulator) [startstop, below of = Solarcell] {DC-DC Converter};
+        \node (CurrentSensor) [startstop,below of = Regulator] {Current Sensor};
+        \node (Micro) [startstop,below of = CurrentSensor] {ESP32 Microcontroller};
+        \node (Battery) [startstop,below of = Micro] {Battery};
+        \node (Load) [startstop,below of = Battery] {Load};
+          
+        \draw[arrow] (Solarcell) -- (Regulator);
+        \draw[arrow] (Regulator) -- (CurrentSensor);
+        \draw[arrow] (CurrentSensor) -- (Micro);
+        \draw[arrow] (Micro) -- (Battery);
+        \draw[arrow] (Battery) -- (Load);
+    \end{tikzpicture}
+    \caption{Block diagram to follow}
+    \label{Diagrama 1}
+\end{figure}
+
+\newpage
+\input{TheoryCalc}
+\newpage
+\input{Simulation}
+\newpage
+\input{Schematic}
+\newpage
+\input{PCBdesign}
+

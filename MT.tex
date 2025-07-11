@@ -1,0 +1,98 @@
+\section{Theoretical Framework}
+
+\subsection{Battery}
+
+It is an electrochemical device that stores chemical energy and converts it into direct current (DC) electrical energy when required. Its basic operation is as follows:
+
+\begin{itemize}
+    \item A battery consists of one or more electrochemical cells. Each cell contains a positive electrode (cathode), a negative electrode (anode), and an electrolyte.
+    \item Chemical reactions between the electrodes and the electrolyte generate a flow of electrons, which produces electric current.
+\end{itemize}
+
+\subsubsection{Types of Batteries}
+
+\begin{itemize}
+    \item \textbf{Primary batteries (not rechargeable)}: Designed for single use and then discarded. Examples: alkaline batteries, primary lithium batteries.
+    \item \textbf{Secondary batteries (rechargeable)}: They can be charged and discharged repeatedly. Examples: lead-acid, lithium-ion, and nickel-cadmium batteries.
+\end{itemize}
+
+\subsubsection{Parameters}
+
+Like every device, it has its parameters or system characteristics that must be monitored:
+
+\begin{itemize}
+    \item \textbf{Voltage:} The electric potential difference between the battery's terminals.
+    \item \textbf{Capacity:} The amount of electrical charge a battery can store, usually measured in ampere-hours ($\ampere\cdot\hour$).
+    \item \textbf{Discharge current:} The amount of current a battery can safely supply.
+    \item \textbf{Internal resistance:} The resistance to the flow of current within the battery.
+    \item \textbf{Life cycle:} The number of charge and discharge cycles a battery can withstand before its performance decreases.
+\end{itemize}
+
+\subsubsection{How can they be charged?}
+
+As is commonly known, batteries must be charged and discharged using Direct Current (DC), and for this, there are charging methods, which are as follows:
+
+\begin{itemize}
+    \item \textbf{Constant Current (CC) Charging:}
+    \begin{itemize}
+      \item A constant current is applied to the battery until it reaches a certain voltage.
+      \item This method involves supplying a constant current to the battery during most of the charging process.
+      \item It is useful for charging batteries that are deeply discharged, as it allows for a quick initial charge.
+      \item If constant current charging is continued once the battery is almost full, overcharging can occur and damage the battery.
+    \end{itemize}
+    \item \textbf{Constant Voltage (CV) Charging:}
+    \begin{itemize}
+      \item A constant voltage is maintained across the battery while the current gradually decreases.
+      \item A constant voltage is maintained at the battery terminals while the charging current gradually decreases as the battery charges.
+      \item It is a safer method than constant current charging, as the current automatically decreases as the battery approaches its maximum capacity.
+    \end{itemize}
+    \item \textbf{CC/CV Charging:}
+    \begin{itemize}
+      \item A combination of the two previous methods, common in lithium-ion batteries.
+      \item Charging begins with a constant current until the battery reaches a certain voltage. Then, the charger switches to constant voltage, and the current gradually decreases until the battery is fully charged.
+    \end{itemize}
+\end{itemize}
+
+Obviously, other considerations are attributed to all this, such as temperature, overcharging, deep discharge, and suitable chargers. The constant current charging method has other types of charging: \textbf{Pulse charging}\footnote{This method involves applying current pulses to the battery, followed by rest periods.}, and \textbf{Trickle charging}\footnote{This method involves applying a small constant current to the battery after it has been fully charged to maintain it at its maximum capacity.}
+
+\subsection{Operating Principle of a Solar Panel}
+
+A solar panel is a device that transforms solar energy into electricity or heat. This is done through the \textbf{Photovoltaic Effect}. This is a physical phenomenon by which a semiconductor material (mostly silicon) generates an electric current when sunlight strikes it. When photons are absorbed by the material, it excites the electrons of the semiconductor, generating an electron-hole pair (a free electron and a positive hole). This causes the excited electrons to move towards the "N-layer"\footnote{This layer is doped with phosphorus, which gives it an excess of electrons (negative charge).} while the holes move to the "P-layer"\footnote{This layer is doped with boron, creating a shortage of electrons (positive charge).} due to the charge difference. This creates an electric field at the P-N junction (Intrinsic layer), generating an electric current (direct current).\\
+
+The generated current flows to an external circuit that can be used to power electrical devices or charge batteries. To increase energy production, multiple cells are connected in series and parallel, forming a solar panel. There are factors that affect its performance:
+
+\begin{itemize}
+  \item \textbf{Sunlight intensity:} The higher the intensity, the greater the electricity generation.
+  \item \textbf{Angle of incidence:} Efficiency is maximum when light strikes the panel perpendicularly.
+  \item \textbf{Temperature:} Solar panels are less efficient at very high temperatures.
+  \item \textbf{Shading:} Shadows on the panel significantly reduce its performance.
+  \item \textbf{Material efficiency:} Depends on the type of photovoltaic cell (monocrystalline, polycrystalline, or thin-film).
+\end{itemize}
+
+\subsection{Operating Principle of a Voltage Regulator}
+
+They are devices that maintain a constant output voltage, regardless of variations in the input voltage or the connected load. There are two main types of voltage regulators:
+
+\begin{itemize}
+  \item \textbf{Linear:} they dissipate excess energy as heat to maintain a constant voltage. They are simple but less efficient.
+  \item \textbf{Switching:} they use a switch (transistor) that turns on and off at a high frequency to control the power sent to the load. They are more efficient than linear regulators, as they convert energy more effectively and generate less heat. They are implemented as Buck, Boost, or Buck-Boost converters.
+\end{itemize}
+
+\subsection{Operating Principle of a DC-DC Converter}
+
+These are circuits that allow converting a DC input voltage into another output voltage, either of a higher or lower value. The most common types include:
+
+\begin{itemize}
+  \item \textbf{Buck converter:} reduces the input voltage to a lower level. It uses a switch (transistor) and an inductor to store energy. When the switch is closed, energy accumulates in the inductor. When it opens, the energy is transferred to the load.
+  \item \textbf{Boost converter:} increases the input voltage to a higher level. It works similarly to the Buck, but the inductor is disconnected from the source and connected to the load, generating a higher voltage.
+  \item \textbf{Buck-Boost converter:} can increase or decrease the input voltage as needed. It combines elements of the previous two.
+\end{itemize}
+
+\subsection{Operating Principle of a Current Sensor}
+
+Current sensors measure the current flowing in a circuit and are commonly used in battery charging to monitor the state and efficiency of the charging process. The most common types include:
+
+\begin{itemize}
+  \item \textbf{Hall effect sensors:} measure current through an electromagnetic principle. A magnet is placed near a conductor, and the generated magnetic field causes a small voltage that is measured and translated into a current measurement. They are non-intrusive and allow measurements in circuits without needing to interrupt the current.
+  \item \textbf{Shunt Resistors:} a known resistance is placed in series with the load. By measuring the voltage drop across this resistor, the current can be calculated using Ohm's Law (V = I * R). This method is simpler but intrusive.
+\end{itemize}

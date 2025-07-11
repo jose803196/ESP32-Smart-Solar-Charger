@@ -1,0 +1,11 @@
+\documentclass{standalone}
+\usepackage{circuitikz}
+
+\begin{document}
+    \begin{circuitikz}[american]\draw
+        (0,0)node[label, color=blue, below]{$+$} to[short,o-] ++(1,0) to[nos] ++(1,0) coordinate(A) to[D, invert, fill=black,label=$D_{3}$] ++(0,-2) coordinate(B) to[short,-o] ++(-2,0) node[label, color=red, above]{$-$}
+        (A) to[L,label=$L$] ++(2,0) coordinate(A1) to[C,label=$C$] ++(0,-2) coordinate(B1) -| (B)
+        (A1) --++(2,0) coordinate (A2) to[R,label=$R_{Load}$] ++(0,-2) -| (B1)
+        (A2) to[short,-o]++(1,0) node[label, color=black, above]{OUT}
+    ;\end{circuitikz}
+\end{document}
