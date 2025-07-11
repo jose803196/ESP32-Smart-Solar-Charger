@@ -1,0 +1,61 @@
+* Battery charging system with current control 
+* Electronic Equipment Design 
+* Student: Jose Lopez
+
+********** Solar Panel (I-V and Power Curve)  
+Iph 0 1 DC 5        ; Current source (photocurrent)  
+D1 1 0 D            ; Diode  
+D2 1 0 D            ; Diode  
+Rs 1 2 0.6805       ; Series resistance  
+Rp 1 0 30           ; Parallel resistance  
+
+********** Buck Converter  
+Vpanel 2 0 AC PWL(0 0 100u 12 300u 90 500u 80 700u 70 900u 12)    ; Solar panel output voltage (node 2)
+
+* For the switch
+Vsin onda 0 AC sin(0 6 50k)
+
+S1 2 SW onda 0 SW_MOD ; Switch
+D3 0 SW D1N4148       ; Freewheeling diode
+L1 SW OUT 300uH       ; Inductor  
+C1 OUT 0 61uF         ; Output capacitor  
+
+********** Shunt resistor (Current sensor)
+Rshunt OUT BAT 0.05   ; 0.05 Ω shunt
+
+********** 18650 Battery (simplified model)
+Vbat BAT 0 DC 4.2             ; Nominal cell voltage (3.7 V), I'll use 4.2 for theoretical calculations
+Rinternal BAT BAT_int 0.1     ; Internal resistance (100 mΩ)
+C_soc BAT_int 0 3000F IC=3.7  ; Capacitor to simulate SOC (3000F = ~2500 mAh)
+
+********** ESP32 (Comparator + Control)
+
+* 0.25V reference (5A * 0.05Ω)
+Vref control_ref 0 DC 0.25  
+
+* Comparator using BSIM (Output 0V if I > 5A, 5V if I < 5A)
+Bcontrol control_signal 0 V=V(OUT,BAT) > V(control_ref) ? 0 : 5
+
+* Switch controlled by the ESP32
+S_control BAT_int LOAD control_signal 0 SW_MODD ; Control MOSFET
+
+* Loads
+Rload LOAD 0 10       ; Main load
+Rphone LOAD 0 20      ; Additional phone charger
+
+* Parameters
+.model SW_MOD SW (ROFF=1E+12 RON=1 VT=2 VH=0.2)
+.model D D(Is=1e-9, N=1, Bv=100, Ibv=1e-9, Cjo=1e-12)  
+.model D1N4148 D(Is=1e-9 N=1 vt=0.7)
+.model SW_MODD SW(ROFF=1E+12 RON=1 VT=2.5 VH=0.5)  ; Realistic MOSFET
+
+.control
+  tran 0.1u 3m UIC
+  set filetype=ascii  
+  run
+  plot  v(2) v(OUT) v(BAT_int) ylabel "Panel, Buck and Battery"; Panel voltage, Buck output, and battery
+  plot (v(OUT,BAT)/0.05) ylabel "Current (A)" ; Current measured by the shunt
+  plot v(LOAD) ylabel "ESP32 control" 
+.endc
+
+.end
