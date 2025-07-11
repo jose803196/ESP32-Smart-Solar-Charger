@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ESP32 Smart Solar Charger System</title>
 </head>
 <body>
     <h1 align="center">ESP32 Smart Solar Charger System</h1>
